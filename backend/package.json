@@ -3,7 +3,8 @@
     "@fastify/secure-session": "^5.3.0",
     "fastify": "^4.10.2",
     "fastify-cookie": "^5.7.0",
-    "fastify-session": "^5.2.1"
+    "fastify-session": "^5.2.1",
+    "pg": "^8.8.0"
   },
   "name": "trakd-backend",
   "description": "TODO",
