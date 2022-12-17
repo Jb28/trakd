@@ -1,10 +1,12 @@
+const fs = require('fs')
+const path = require('path')
 const fastify = require('fastify')({
-    logger: true,
+    logger: false,
 });
 
 fastify.register(require('fastify-cookie'));
 fastify.register(require('fastify-session'), {
-    secret: 'my-secret',
+    secret: fs.readFileSync(path.join(__dirname, 'secret-key')),
     cookie: {
         // Set the cookie to expire after 7 days
         maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -18,7 +20,7 @@ fastify.post('/login/web', (request, reply) => {
         request.session.username = request.body.username;
         request.session.isLoggedIn = true;
         // Set the cookie
-        request.setCookie('username', request.body.username);
+        // request.setCookie('auth_key', request.body.username); //todo - make this an auth key
         reply.send({ message: 'Logged in successfully' });
     } else {
         reply.status(401).send({ message: 'Invalid username or password' });
