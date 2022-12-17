@@ -1,0 +1,24 @@
+{
+  "dependencies": {
+    "fastify": "^4.10.2"
+  },
+  "name": "trakd-backend",
+  "description": "TODO",
+  "version": "1.0.0",
+  "main": "auth-data-service.js",
+  "devDependencies": {},
+  "scripts": {
+    "local": "npm install && node auth-data-service.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jb28/trakd.git"
+  },
+  "author": "J Butler",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jb28/trakd/issues"
+  },
+  "homepage": "https://github.com/Jb28/trakd#readme"
+}
