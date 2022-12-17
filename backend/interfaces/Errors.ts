@@ -1,7 +1,7 @@
 export interface ServiceError {
-    Messages: Array<string>;
+    ErrorMessages: Array<string>;
 }
 
 export interface RepositoryError {
-    Messages: Array<string>;
+    ErrorMessages: Array<string>;
 }

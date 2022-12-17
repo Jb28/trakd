@@ -23,5 +23,8 @@
   "bugs": {
     "url": "https://github.com/Jb28/trakd/issues"
   },
-  "homepage": "https://github.com/Jb28/trakd#readme"
+  "homepage": "https://github.com/Jb28/trakd#readme",
+  "devDependencies": {
+    "@types/node": "^18.11.16"
+  }
 }

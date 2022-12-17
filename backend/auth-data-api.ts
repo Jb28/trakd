@@ -1,5 +1,9 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { ServiceError } from './interfaces/Errors';
+import { User } from './interfaces/User';
+import { createUser } from './services/login-service';
+
 const fastify = require('fastify')({
     logger: false,
 });
@@ -21,7 +25,21 @@ fastify.register(require('@fastify/cookie'), {
     parseOptions: { signed: signedCookies }, // options for parsing cookies
 });
 
-fastify.get('/login/web', (request, reply) => {
+fastify.post('/user/create', (request, reply) => {
+    //ToDo API level validation
+
+    //
+    const createdUser = createUser({ email: request.body.email, password: request.body.password })
+        .then(createdUser => {                        
+            reply.setCookie('auth_key', createdUser.username); //todo - make this an auth key
+            reply.send({ message: 'Logged in successfully' });    
+        })
+        .catch(err => {
+            reply.status(401).send(err);
+        });
+});
+
+fastify.get('/user/login/web', (request, reply) => {
     // Validate the username and password
     if (request.query.username === 'admin' && request.query.password === 'password') {
         // Set the session data
@@ -35,7 +53,7 @@ fastify.get('/login/web', (request, reply) => {
     }
 });
 
-fastify.get('/profile', (request, reply) => {
+fastify.get('/user/profile', (request, reply) => {
     // Check if the user is logged in
     const authkeyFromCookie = request.cookies.auth_key;
     //for signed cookies, TS was being lil bitch

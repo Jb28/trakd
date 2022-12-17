@@ -1,18 +1,13 @@
 const moduleExports = {};
-const cryptoModule = require('crypto');
+import cryptoModule from 'crypto';
 import { User } from '../interfaces/User';
-import { ServiceError } from '../interfaces/Errors';
 import { insertNewUser } from '../repositories/login-repository';
 
-export const createUser = async function(user: User): Promise<ServiceError | User> {
+export const createUser = async function(user: User): Promise<User> {
     
-    //validate password format, can extract this
-    const errorMessages: Array<string> = [];
+    //validate password format, can extract this    
     if (user.password.length > 50 || user.password.length < 8) {
-        errorMessages.push('Password must be between 8 and 50 characters');
-    }
-    if (errorMessages.length > 0) {
-        return { Messages: errorMessages };
+        throw new Error('Password must be between 8 and 50 characters');
     }
     
     //choose a salt - make this random

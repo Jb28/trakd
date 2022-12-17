@@ -1,8 +1,7 @@
 import { Client } from 'pg';
 import { User } from '../interfaces/User';
-import { RepositoryError } from '../interfaces/Errors';
 
-export const insertNewUser = async function(user: User): Promise<RepositoryError|User> {
+export const insertNewUser = async function(user: User): Promise<User> {
     const client = new Client();
     await client.connect();
     try {
