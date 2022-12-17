@@ -18,6 +18,7 @@ redis setup:
 `docker exec -it redis redis-cli`
 
 # TABLES 
+```
 CREATE TABLE user_main (
     id              bigserial UNIQUE,
     email           varchar(200) NOT NULL,
@@ -40,3 +41,4 @@ CREATE TABLE user_auth_keys (
     country         varchar(50) NOT NULL,
     device          varchar(500) NOT NULL
 );
+```
