@@ -5,7 +5,7 @@ const fastify = require('fastify')({
   fastify.register(require('fastify-cookie'))
   fastify.register(require('fastify-session'), {
     secret: 'my-secret',
-    cookie: {
+    cookie: { 
       // Set the cookie to expire after 7 days
       maxAge: 7 * 24 * 60 * 60 * 1000
     }
@@ -34,6 +34,11 @@ const fastify = require('fastify')({
     }
   })
   
+  fastify.post('/logout', (request, reply) => {
+    request.session.delete()
+    reply.send('logged out')
+  });
+
   fastify.listen(3000, (err, address) => {
     if (err) throw err
     fastify.log.info(`server listening on ${address}`)

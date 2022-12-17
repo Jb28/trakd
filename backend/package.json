@@ -1,12 +1,14 @@
 {
   "dependencies": {
-    "fastify": "^4.10.2"
+    "@fastify/secure-session": "^5.3.0",
+    "fastify": "^4.10.2",
+    "fastify-cookie": "^5.7.0",
+    "fastify-session": "^5.2.1"
   },
   "name": "trakd-backend",
   "description": "TODO",
   "version": "1.0.0",
   "main": "auth-data-service.js",
-  "devDependencies": {},
   "scripts": {
     "local": "npm install && node auth-data-service.js",
     "test": "echo \"Error: no test specified\" && exit 1"
