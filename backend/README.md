@@ -3,6 +3,8 @@ TODO
 - Create backend server with fastify
 - add login via google 
 
+# Useful links
+TypeScript debug setup: https://pkief.medium.com/how-to-debug-typescript-with-vs-code-9cec93b4ae56
 
 # POSTGRES
 docker setup: 

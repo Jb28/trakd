@@ -1,7 +1,9 @@
-import fs from 'fs';
-import path from 'path';
-import { ServiceError } from './interfaces/Errors';
-import { User } from './interfaces/User';
+// import * as fs from 'fs';
+const fs = require('fs');
+// import * as path from 'path';
+const path = require('path');
+import { FastifyReply, FastifyRequest } from 'fastify';
+// const { createUser } = require('./services/login-service');
 import { createUser } from './services/login-service';
 
 const fastify = require('fastify')({
@@ -25,11 +27,10 @@ fastify.register(require('@fastify/cookie'), {
     parseOptions: { signed: signedCookies }, // options for parsing cookies
 });
 
-fastify.post('/user/create', (request, reply) => {
+fastify.post('/user/create', (request: any, reply: any) => {
     //ToDo API level validation
 
-    //
-    const createdUser = createUser({ email: request.body.email, password: request.body.password })
+    createUser({ email: request.body.email, password: request.body.password })
         .then(createdUser => {                        
             reply.setCookie('auth_key', createdUser.username); //todo - make this an auth key
             reply.send({ message: 'Logged in successfully' });    
@@ -39,7 +40,7 @@ fastify.post('/user/create', (request, reply) => {
         });
 });
 
-fastify.get('/user/login/web', (request, reply) => {
+fastify.get('/user/login/web', (request: any, reply: any) => {
     // Validate the username and password
     if (request.query.username === 'admin' && request.query.password === 'password') {
         // Set the session data
@@ -53,7 +54,7 @@ fastify.get('/user/login/web', (request, reply) => {
     }
 });
 
-fastify.get('/user/profile', (request, reply) => {
+fastify.get('/user/profile', (request: any, reply: any) => {
     // Check if the user is logged in
     const authkeyFromCookie = request.cookies.auth_key;
     //for signed cookies, TS was being lil bitch
@@ -73,12 +74,12 @@ fastify.get('/user/profile', (request, reply) => {
     }
 });
 
-fastify.post('/logout', (request, reply) => {
+fastify.post('/logout', (request: any, reply: any) => {
     request.session.delete();
     reply.send('logged out');
 });
 
-fastify.listen(3000, (err, address) => {
+fastify.listen(3000, (err: any, address: any) => {
     if (err) throw err;
     fastify.log.info(`server listening on ${address}`);
 });

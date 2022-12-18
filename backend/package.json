@@ -9,9 +9,11 @@
   "name": "trakd-backend",
   "description": "TODO",
   "version": "1.0.0",
-  "main": "auth-data-service.js",
+  "main": "auth-data-api.ts",
   "scripts": {
-    "local": "npm install && node auth-data-service.js",
+    "start": "node build/auth-data-api.js",
+    "prestart": "npm run build && cp secret-key ./build/secret-key",
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -25,6 +27,7 @@
   },
   "homepage": "https://github.com/Jb28/trakd#readme",
   "devDependencies": {
-    "@types/node": "^18.11.16"
+    "@types/node": "^18.11.17",
+    "@types/pg": "^8.6.5"
   }
 }

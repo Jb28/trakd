@@ -1,6 +1,8 @@
 const moduleExports = {};
-import cryptoModule from 'crypto';
+// import * as crypto from 'crypto';
+const crypto = require('crypto');
 import { User } from '../interfaces/User';
+// const { User } = require('../interfaces/User');
 import { insertNewUser } from '../repositories/login-repository';
 
 export const createUser = async function(user: User): Promise<User> {
@@ -14,7 +16,7 @@ export const createUser = async function(user: User): Promise<User> {
     let salt = 'abc';
 
     //encrypt password
-    const hashedPlainPasswordBytes = cryptoModule.scryptSync(user.password, new Buffer(salt), 64, { "N": 1024, "r": 8, "p": 1 });    
+    const hashedPlainPasswordBytes = crypto.scryptSync(user.password, new Buffer(salt), 64, { "N": 1024, "r": 8, "p": 1 });    
     user.password = hashedPlainPasswordBytes.toString('hex');
     
     //create username
@@ -26,6 +28,6 @@ export const createUser = async function(user: User): Promise<User> {
     return response;
 };
 
-export const loginUser = function(email, password) {
+export const loginUser = function(email: string, password: string) {
 
 };
