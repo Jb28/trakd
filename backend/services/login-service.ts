@@ -21,7 +21,7 @@ export const createUser = async function(pgPool: Pool, user: User): Promise<User
     //encrypt password 
     const hashedPlainPasswordBytes = crypto.scryptSync(user.password, new Buffer(user.passwordSalt), 64, { "N": 1024, "r": 8, "p": 1 });    
     user.passwordHashed = hashedPlainPasswordBytes.toString('hex');
-    delete user.password;
+    
 
     //create username
     user.username = user.email.split('@')[0].substring(0,10);
@@ -31,9 +31,27 @@ export const createUser = async function(pgPool: Pool, user: User): Promise<User
 
     //log the user in
 
+    delete user.password;
+
     return response;
 };
 
 export const loginUser = function(email: string, password: string) {
-    
+    //find user by email
+
+    //hash the passed in password + the salt applied to the user 
+
+    //if password does not match, error & return
+
+    //create a new user session
+};
+
+export const validateUserSession = function(sessionKey: string) {
+    //check user session exists
+
+    //extend session by max session time
+};
+
+export const logoutUser = function(sessionKey: string) {
+    //remove user session
 };
