@@ -18,19 +18,22 @@ export const createUser = async function(pgPool: Pool, user: User): Promise<User
     //choose a salt - make this random
     user.passwordSalt = 'abc';
 
-    //encrypt password
+    //encrypt password 
     const hashedPlainPasswordBytes = crypto.scryptSync(user.password, new Buffer(user.passwordSalt), 64, { "N": 1024, "r": 8, "p": 1 });    
     user.passwordHashed = hashedPlainPasswordBytes.toString('hex');
-    
+    delete user.password;
+
     //create username
     user.username = user.email.split('@')[0].substring(0,10);
 
     //store in database
     const response = await insertNewUser(pgPool, user);
 
+    //log the user in
+
     return response;
 };
 
 export const loginUser = function(email: string, password: string) {
-
+    
 };
