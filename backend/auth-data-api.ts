@@ -2,13 +2,20 @@
 const fs = require('fs');
 // import * as path from 'path';
 const path = require('path');
-import { FastifyReply, FastifyRequest } from 'fastify';
 // const { createUser } = require('./services/login-service');
 import { createUser } from './services/login-service';
-
+import { Pool } from 'pg';
 const fastify = require('fastify')({
     logger: false,
 });
+
+/* Setup */
+const pgPool = new Pool({
+    user: 'postgres',
+    password: 'letsrace',
+    database: 'local_test',
+    port: 5432
+})
 
 // fastify.register(require('fastify-cookie'));
 // fastify.register(require('fastify-session'), {
@@ -30,10 +37,10 @@ fastify.register(require('@fastify/cookie'), {
 fastify.post('/user/create', (request: any, reply: any) => {
     //ToDo API level validation
 
-    createUser({ email: request.body.email, password: request.body.password })
+    createUser(pgPool, { email: request.body.email, password: request.body.password })
         .then(createdUser => {                        
             reply.setCookie('auth_key', createdUser.username); //todo - make this an auth key
-            reply.send({ message: 'Logged in successfully' });    
+            reply.send({ message: 'User created successfully' });    
         })
         .catch(err => {
             reply.status(401).send(err);

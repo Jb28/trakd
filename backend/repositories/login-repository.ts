@@ -1,18 +1,17 @@
-import { Client } from 'pg';
+import { Client, Pool } from 'pg';
 import { User } from '../interfaces/User';
 
-export const insertNewUser = async function(user: User): Promise<User> {
-    const client = new Client();
-    await client.connect();
+export const insertNewUser = async function(pgPool: Pool, user: User): Promise<User> {    
+    const client = await pgPool.connect();
     try {
         const result = await client.query(
-            'INSERT INTO users (email, password_hashed, username) VALUES ($1, $2, $3)',
-            [user.email, user.password_hashed, user.username]
+            'INSERT INTO user_main (email, password_hashed, password_salt, username) VALUES ($1, $2, $3, $4)',
+            [user.email, user.passwordHashed, user.passwordSalt, user.username]
         )
     } catch (err) {
-
+        console.log(`Postgres Error in insertNewUser: ${err}`);
     }finally {
-        await client.end();
+        await client.release();
         return user;
     }
 };

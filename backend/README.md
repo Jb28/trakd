@@ -23,7 +23,7 @@ redis setup:
 ```
 CREATE TABLE user_main (
     id              bigserial UNIQUE,
-    email           varchar(200) NOT NULL,
+    email           varchar(200) NOT NULL UNIQUE,
     password_hashed varchar(200) NOT NULL,
     password_salt   varchar(200) NOT NULL,
     username        varchar(30),
