@@ -35,19 +35,21 @@ fastify.register(require('@fastify/cookie'), {
 });
 
 fastify.post('/user/create', (request: any, reply: any) => {
-    //ToDo API level validation
-
-    createUser(pgPool, { email: request.body.email, password: request.body.password })
-        .then(createdUser => {                        
-            reply.setCookie('auth_key', createdUser.username); //todo - make this an auth key
+    //ToDo param validation
+    const userDeviceInformation = {
+        ip: request.ip
+    };
+    createUser(pgPool, { email: request.body.email, password: request.body.password }, userDeviceInformation)
+        .then(loginSessionKey => {
+            reply.setCookie('auth_key', loginSessionKey);
             reply.send({ message: 'User created successfully' });    
         })
         .catch(err => {
-            reply.status(401).send(err);
+            reply.status(401).send({message: 'Login error encountered, please retry later.'});
         });
 });
 
-fastify.get('/user/login/web', (request: any, reply: any) => {
+fastify.post('/user/login/web', (request: any, reply: any) => {
     // Validate the username and password
     if (request.query.username === 'admin' && request.query.password === 'password') {
         // Set the session data

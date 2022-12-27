@@ -40,7 +40,7 @@ CREATE TABLE user_auth_keys (
     user_id         bigint NOT NULL,
     created_on      timestamp default current_timestamp,
     ip              varchar(50) NOT NULL,
-    country         varchar(50) NOT NULL,
-    device          varchar(500) NOT NULL
+    country         varchar(50),
+    device          varchar(500)
 );
 ```
