@@ -1,13 +1,14 @@
-// import * as fs from 'fs';
 const fs = require('fs');
-// import * as path from 'path';
 const path = require('path');
-// const { createUser } = require('./services/login-service');
-import { createUser } from './services/login-service';
 import { Pool } from 'pg';
+import { UserDeviceInformation } from './interfaces/User';
 const fastify = require('fastify')({
     logger: false,
 });
+import { 
+    createUser,
+    loginUser
+} from './services/login-service';
 
 /* Setup */
 const pgPool = new Pool({
@@ -15,7 +16,12 @@ const pgPool = new Pool({
     password: 'letsrace',
     database: 'local_test',
     port: 5432
-})
+});
+const envs = {
+    authKeyValue: process.env.authKeyName || 'auth_key',
+    port: process.env.port || 3000,
+    signedCookies: process.env.signedCookies || false,
+};
 
 // fastify.register(require('fastify-cookie'));
 // fastify.register(require('fastify-session'), {
@@ -26,12 +32,10 @@ const pgPool = new Pool({
 //     },
 // });
 
-const signedCookies = process.env.signedCookies || false;
-
 fastify.register(require('@fastify/cookie'), {
     secret: fs.readFileSync(path.join(__dirname, 'secret-key')),
     hook: 'onRequest', // set to false to disable cookie autoparsing or set autoparsing on any of the following hooks: 'onRequest', 'preParsing', 'preHandler', 'preValidation'. default: 'onRequest'
-    parseOptions: { signed: signedCookies }, // options for parsing cookies
+    parseOptions: { signed: envs.signedCookies }, // options for parsing cookies
 });
 
 fastify.post('/user/create', (request: any, reply: any) => {
@@ -41,7 +45,7 @@ fastify.post('/user/create', (request: any, reply: any) => {
     };
     createUser(pgPool, { email: request.body.email, password: request.body.password }, userDeviceInformation)
         .then(loginSessionKey => {
-            reply.setCookie('auth_key', loginSessionKey);
+            reply.setCookie(envs.authKeyValue, loginSessionKey);
             reply.send({ message: 'User created successfully' });    
         })
         .catch(err => {
@@ -50,19 +54,21 @@ fastify.post('/user/create', (request: any, reply: any) => {
 });
 
 fastify.post('/user/login/web', (request: any, reply: any) => {
-    // Validate the username and password
-    if (request.query.username === 'admin' && request.query.password === 'password') {
-        // Set the session data
-        // request.session.username = request.query.username;
-        // request.session.isLoggedIn = true;
-        // Set the cookie
-        reply.setCookie('auth_key', request.query.username); //todo - make this an auth key
-        reply.send({ message: 'Logged in successfully' });
-    } else {
-        reply.status(401).send({ message: 'Invalid username or password' });
-    }
+    //ToDo param validation
+    const userDeviceInformation = {
+        ip: request.ip
+    };
+    loginUser(pgPool, request.body.email, request.body.password, userDeviceInformation, request.cookies[envs.authKeyValue])
+        .then(extendedLoginSessionKey => {                        
+            reply.setCookie(envs.authKeyValue, extendedLoginSessionKey); 
+            reply.send({ message: 'Logged in successfully' });
+        })
+        .catch(error => {
+            reply.status(401).send({message: 'Login error encountered, please retry later.'});
+        });
 });
 
+//ToDo
 fastify.get('/user/profile', (request: any, reply: any) => {
     // Check if the user is logged in
     const authkeyFromCookie = request.cookies.auth_key;
@@ -83,12 +89,14 @@ fastify.get('/user/profile', (request: any, reply: any) => {
     }
 });
 
+//ToDo
 fastify.post('/logout', (request: any, reply: any) => {
-    request.session.delete();
+    //delete auth key from DB for user
+    //delete cookie
     reply.send('logged out');
 });
 
-fastify.listen(3000, (err: any, address: any) => {
+fastify.listen(envs.port, (err: any, address: any) => {
     if (err) throw err;
     fastify.log.info(`server listening on ${address}`);
 });

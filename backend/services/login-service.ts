@@ -1,4 +1,3 @@
-const moduleExports = {};
 const crypto = require('crypto');
 import { Pool } from 'pg';
 import { 
@@ -8,35 +7,23 @@ import {
 import { 
     insertNewUserToDB, 
     getUserByEmailFromDB,
-    insertUserSession 
+    insertUserSession ,
+    getUserSessionBySessionKey,
+    extendExistingUserSession
 } from '../repositories/login-repository';
 
-export const createUser = async function(pgPool: Pool, user: User, userDeviceInformation: UserDeviceInformation): Promise<string> {
-    
-    //validate password format, can extract this
+export const createUser = async function(pgPool: Pool, user: User, userDeviceInformation: UserDeviceInformation): Promise<string> {    
     if (user.password !== undefined) {
         if (user.password.length > 50 || user.password.length < 8) {
             throw new Error('Password must be between 8 and 50 characters');
         }
-    }
-    
-    //choose a salt - make this random
-    user.passwordSalt = generateRandomHex(64);
-
-    //encrypt password     
-    user.passwordHashed = hashPasswordWithSalt(user.password!, user.passwordSalt);
-
-    //create username
-    user.username = user.email.split('@')[0].substring(0,10);
-
-    //store in database
-    const response = await insertNewUserToDB(pgPool, user);
-
-    //create login session
+    }    
+    user.passwordSalt = generateRandomHex(64);    
+    user.passwordHashed = hashPasswordWithSalt(user.password!, user.passwordSalt);    
+    user.username = user.email.split('@')[0].substring(0,10);    
+    const response = await insertNewUserToDB(pgPool, user);    
     const loginSession = await loginUser(pgPool, user.email, user.password!, userDeviceInformation);
-
     delete user.password;
-
     return loginSession;
 };
 
@@ -45,8 +32,7 @@ const hashPasswordWithSalt = function(password: string, salt: string): string {
     return hashedPlainPasswordBytes.toString('hex');
 };
 
-//to generate auth key
-//generateHashForString(userData.general.user_id + '-' + Date.now() + '-' + moduleExports.generateRandomHex(128));
+//to generate session key
 const generateHashForString = function(stringToHash: string) {
     const nodeSHA256 = crypto.createHash('sha256');
     nodeSHA256.update(stringToHash, 'utf8');
@@ -71,37 +57,43 @@ const generateRandomHex = function(length: number) {
         return '';
     }
     let randomHex = '';
-    let byetsArray = generateRandomBytesArray(Math.ceil(length / 2));
+    const byetsArray = generateRandomBytesArray(Math.ceil(length / 2));
     randomHex = byetsArray.toString('hex').slice(0, length);
     return randomHex;
 };
 
-export const loginUser = async function(pgPool: Pool, email: string, password: string, userDeviceInformation: UserDeviceInformation): Promise<string> {
+export const loginUser = async function(pgPool: Pool, email: string, password: string, userDeviceInformation: UserDeviceInformation, currentSessionKey?: string): Promise<string> {
     //find user by email
     const user = await getUserByEmailFromDB(pgPool, email);
 
     //hash the passed in password + the salt applied to the user 
-    let passedInPasswordHashed = hashPasswordWithSalt(password, user.passwordSalt!);
+    const passedInPasswordHashedWithSalt = hashPasswordWithSalt(password, user.passwordSalt!);
 
     //if password does not match, error & return
-    if (user.passwordHashed !== passedInPasswordHashed) {
+    if (user.passwordHashed !== passedInPasswordHashedWithSalt) {
         throw new Error('Login error encountered, please retry later.');
     }
 
     //create a new user session
-    return createUserSession(pgPool, user, userDeviceInformation);
+    return createUserSession(pgPool, user, userDeviceInformation, currentSessionKey);
 };
 
-const createUserSession = async function(pgPool: Pool, user: User, userDeviceInformation: UserDeviceInformation): Promise<string> {
+const createUserSession = async function(pgPool: Pool, user: User, userDeviceInformation: UserDeviceInformation, currentSessionKey?: string): Promise<string> {
+    if (!currentSessionKey){            
+        const sessionKey = generateHashForString(`${user.id}-${Date.now()}-${generateRandomHex(128)}`);
+        await insertUserSession(pgPool, user, sessionKey, userDeviceInformation);
+        return sessionKey;
+    }
+    //search for existing session
+    const currentUserSessionFromKey = await getUserSessionBySessionKey(pgPool, user, currentSessionKey);
+    //if it exists, extend it    
+    if (currentUserSessionFromKey) {
+        await extendExistingUserSession(pgPool, user, currentSessionKey)
+        return currentSessionKey;
+    }
     const sessionKey = generateHashForString(`${user.id}-${Date.now()}-${generateRandomHex(128)}`);
     await insertUserSession(pgPool, user, sessionKey, userDeviceInformation);
     return sessionKey;
-};
-
-export const validateUserSession = function(sessionKey: string) {
-    //check user session exists
-
-    //extend session by max session time
 };
 
 export const logoutUser = function(sessionKey: string) {

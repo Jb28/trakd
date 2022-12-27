@@ -10,10 +10,19 @@ export interface User {
     isActivated?: boolean,
     createdOn?: Date, 
     updatedOn?: Date,
-}
+};
 
 export interface UserDeviceInformation {
     ip?: string;
     country?: string;
     device?: string;
-}
+};
+
+export interface UserSessionKey {
+    key: string;
+    userId: number;
+    createdOn: Date; 
+    ip: string;
+    country?: string;
+    device?: string;
+};

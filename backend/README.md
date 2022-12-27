@@ -35,7 +35,7 @@ CREATE TABLE user_main (
     PRIMARY KEY (id)
 );
 
-CREATE TABLE user_auth_keys (
+CREATE TABLE user_session_keys (
     key             varchar(128) PRIMARY KEY,
     user_id         bigint NOT NULL,
     created_on      timestamp default current_timestamp,
