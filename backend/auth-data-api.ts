@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 import { Pool } from 'pg';
-import { UserDeviceInformation } from './interfaces/User';
 const fastify = require('fastify')({
     logger: false,
 });
@@ -69,27 +68,6 @@ fastify.post('/user/login/web', (request: any, reply: any) => {
         });
 });
 
-//ToDo
-fastify.get('/user/profile', (request: any, reply: any) => {
-    // Check if the user is logged in
-    const authkeyFromCookie = request.cookies.auth_key;
-    //for signed cookies, TS was being lil bitch
-    // if (signedCookies === true) {
-    //     if (signedAuthkeyFromCookie === undefined) {
-    //         reply.status(401).send({ message: 'Unauthorized' });
-    //     }
-    //     authkeyFromCookie = request.unsignCookie(signedAuthkeyFromCookie);
-    // }
-
-    //validate auth_key against service layer
-    
-    if (request.session.isLoggedIn) {
-        reply.send({ message: `Welcome, ${request.session.username}` });
-    } else {
-        reply.status(401).send({ message: 'Unauthorized' });
-    }
-});
-
 fastify.post('/user/logout', (request: any, reply: any) => {
     const userSessionKey = request.cookies[envs.authKeyValue];
     if (!userSessionKey) {
@@ -104,6 +82,16 @@ fastify.post('/user/logout', (request: any, reply: any) => {
             }
             reply.status(401).send({ message: 'Unable to logout at this time, please try again later.' });
         });
+});
+
+//ToDo
+fastify.get('/user/profile', (request: any, reply: any) => {
+    reply.status(401).send({ message: 'Not implemented' });
+});
+
+//ToDo
+fastify.get('/user/garage', (request: any, reply: any) => {
+    reply.status(401).send({ message: 'Not implemented' });
 });
 
 fastify.listen(envs.port, (err: any, address: any) => {

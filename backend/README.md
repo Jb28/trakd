@@ -43,4 +43,16 @@ CREATE TABLE user_session_keys (
     country         varchar(50),
     device          varchar(500)
 );
+
+CREATE TABLE user_garage (
+    id              bigserial UNIQUE,
+    user_id         bigint NOT NULL,
+    name            varchar(200) NOT NULL,
+);
+
+CREATE TABE user_vehicle (
+    id              bigserial UNIQUE,
+    user_id         bigint NOT NULL,
+    garage_id         bigint NOT NULL,
+);
 ```
