@@ -64,24 +64,27 @@ export const insertUserSession = async function(pgPool: Pool, user: User, sessio
     }
 };
 
-export const getUserSessionBySessionKey = async function(pgPool: Pool, user: User, sessionKey?: string): Promise<UserSessionKey> {
+export const getUserSessionBySessionKey = async function(pgPool: Pool, user: User, sessionKey?: string): Promise<UserSessionKey | void> {
     const client = await pgPool.connect();
     try {
         const result = await client.query(
             `SELECT key, user_id, created_on, current_timestamp, ip, country, device
              FROM user_session_keys
-             WHERE key = $1, user_id = $2`,
+             WHERE key = $1 and user_id = $2`,
             [sessionKey, user.id]
         );
-        const resultData = result.rows[0];
-        return {
-            key: resultData.key,
-            userId: resultData.user_id,
-            createdOn: resultData.current_timestamp, //ToDo: Parse as Date required?
-            ip: resultData.ip,
-            country: resultData.country,
-            device: resultData.device
-        };
+        if (result.rows.length > 0){
+            const resultData = result.rows[0];
+            return {
+                key: resultData.key,
+                userId: resultData.user_id,
+                createdOn: resultData.current_timestamp, //ToDo: Parse as Date required?
+                ip: resultData.ip,
+                country: resultData.country,
+                device: resultData.device
+            };
+        }
+        return;
     } catch (err) {
         console.log(`Postgres Error in getUserSessionBySessionKey: ${err}`);
         throw err;
@@ -90,24 +93,15 @@ export const getUserSessionBySessionKey = async function(pgPool: Pool, user: Use
     }
 };
 
-export const extendExistingUserSession = async function(pgPool: Pool, user: User, sessionKey?: string): Promise<UserSessionKey> {
+export const extendExistingUserSession = async function(pgPool: Pool, user: User, sessionKey?: string): Promise<void> {
     const client = await pgPool.connect();
     try {
         const result = await client.query(
             `UPDATE user_session_keys 
              SET created_on = $1
-             WHERE key = $2, user_id = $3`,
+             WHERE key = $2 AND user_id = $3`,
             [new Date(), sessionKey, user.id]
         );
-        const resultData = result.rows[0];
-        return {
-            key: resultData.key,
-            userId: resultData.user_id,
-            createdOn: resultData.current_timestamp, //ToDo: Parse as Date required?
-            ip: resultData.ip,
-            country: resultData.country,
-            device: resultData.device
-        };
     } catch (err) {
         console.log(`Postgres Error in extendExistingUserSession: ${err}`);
         throw err;
