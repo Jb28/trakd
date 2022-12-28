@@ -7,7 +7,8 @@ const fastify = require('fastify')({
 });
 import { 
     createUser,
-    loginUser
+    loginUser,
+    logoutUser
 } from './services/login-service';
 
 /* Setup */
@@ -89,11 +90,20 @@ fastify.get('/user/profile', (request: any, reply: any) => {
     }
 });
 
-//ToDo
-fastify.post('/logout', (request: any, reply: any) => {
-    //delete auth key from DB for user
-    //delete cookie
-    reply.send('logged out');
+fastify.post('/user/logout', (request: any, reply: any) => {
+    const userSessionKey = request.cookies[envs.authKeyValue];
+    if (!userSessionKey) {
+        reply.status(401).send({ message: 'You are not currently logged in.' });
+        return;
+    }
+    logoutUser(pgPool, userSessionKey)
+        .then(logoutSuccess => {
+            if (logoutSuccess === true) {
+                reply.send({ message: 'Logged out successfully.' });
+                return;
+            }
+            reply.status(401).send({ message: 'Unable to logout at this time, please try again later.' });
+        });
 });
 
 fastify.listen(envs.port, (err: any, address: any) => {

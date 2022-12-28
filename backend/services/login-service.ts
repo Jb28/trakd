@@ -9,7 +9,8 @@ import {
     getUserByEmailFromDB,
     insertUserSession ,
     getUserSessionBySessionKey,
-    extendExistingUserSession
+    extendExistingUserSession,
+    logoutUserSession
 } from '../repositories/login-repository';
 
 export const createUser = async function(pgPool: Pool, user: User, userDeviceInformation: UserDeviceInformation): Promise<string> {    
@@ -96,6 +97,6 @@ const createUserSession = async function(pgPool: Pool, user: User, userDeviceInf
     return sessionKey;
 };
 
-export const logoutUser = function(sessionKey: string) {
-    //remove user session
+export const logoutUser = async function(pgPool: Pool, sessionKey: string): Promise<boolean>  {    
+    return await logoutUserSession(pgPool, sessionKey);    
 };

@@ -109,3 +109,20 @@ export const extendExistingUserSession = async function(pgPool: Pool, user: User
         await client.release();
     }
 };
+
+export const logoutUserSession = async function(pgPool: Pool, sessionKey: string): Promise<boolean> {
+    const client = await pgPool.connect();
+    try {
+        const result = await client.query(
+            `DELETE FROM user_session_keys 
+             WHERE key = $1`,
+            [sessionKey]
+        );
+        return true;
+    } catch (err) {
+        console.log(`Postgres Error in logoutUserSession: ${err}`);
+        return false;
+    } finally {
+        await client.release();
+    }
+};
