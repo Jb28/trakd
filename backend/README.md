@@ -48,11 +48,23 @@ CREATE TABLE user_garage (
     id              bigserial UNIQUE,
     user_id         bigint NOT NULL,
     name            varchar(200) NOT NULL,
+    created_on      timestamp default current_timestamp,
+    updated_on      timestamp default current_timestamp
 );
 
-CREATE TABE user_vehicle (
+CREATE TABLE user_vehicle (
     id              bigserial UNIQUE,
     user_id         bigint NOT NULL,
-    garage_id         bigint NOT NULL,
+    garage_id       bigint NOT NULL,
+    type            varchar(20) NOT NULL,
+    make            varchar(50) NOT NULL,
+    model           varchar(100) NOT NULL,
+    year            timestamp,
+    description     varchar(500),
+    history         varchar(1000),
+    image_url       varchar(400),
+    modifications   jsonb,
+    created_on      timestamp default current_timestamp,
+    updated_on      timestamp default current_timestamp
 );
 ```
