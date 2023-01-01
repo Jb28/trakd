@@ -13,7 +13,11 @@ import {
     logoutUser,
     getUserSessionByKey
 } from './services/login-service';
-import { createUserGarage } from './services/vehicle-management-service';
+import { 
+    createUserGarage,
+    createUserVehicle,
+    getUserGarageWithVehicles
+} from './services/vehicle-management-service';
 
 /* Setup */
 const pgPool = new Pool({
@@ -125,7 +129,7 @@ fastify.post('/user/garage/create', async (request: any, reply: any) => {
         return
     }
     reply.send({ 
-        message: '',
+        message: 'Successfully created Garage!',
         data: {
             id: createdGarage.id,
             userid: createdGarage.userId,
@@ -133,6 +137,73 @@ fastify.post('/user/garage/create', async (request: any, reply: any) => {
             vehicles: [],
             createdOn: createdGarage.createdOn,
             updatedOn: createdGarage.updatedOn
+        }
+    })
+});
+
+fastify.get('/user/garage', async (request: any, reply: any) => {
+    //ToDo param validation
+    const garageId = parseInt(request.query.garageId);
+    const user = await verifyUserSession(request, reply);
+    if (!user){
+        return;
+    }
+    const retrievedGarage = await getUserGarageWithVehicles(pgPool, user!, garageId);
+    if (!retrievedGarage) {;
+        reply.status(500).send({ message: 'Unable to retrieve garage at this time, please try again later.' });
+        return
+    }
+    reply.send({ 
+        message: 'Successfully retrieved Garage!',
+        data: {
+            id: retrievedGarage.id,
+            userid: retrievedGarage.userId,
+            name: retrievedGarage.name,
+            vehicles: retrievedGarage.vehicles,
+            createdOn: retrievedGarage.createdOn,
+            updatedOn: retrievedGarage.updatedOn
+        }
+    })
+});
+
+fastify.post('/user/vehicle/create', async (request: any, reply: any) => {
+    //ToDo param validation
+    const vehicleToCreate = {        
+        garageId: parseInt(request.body.garageId),
+        type: request.body.type,
+        make: request.body.make,
+        model: request.body.model,
+        year: new Date(request.body.year),
+        description: request.body.description,
+        history: request.body.history,
+        imageUrl: request.body.imageUrl,
+        modifications: request.body.modifications
+    };
+    const user = await verifyUserSession(request, reply);
+    if (!user){
+        return;
+    }
+    const createdVehicle = await createUserVehicle(pgPool, user!, vehicleToCreate);
+    if (!createdVehicle) {;
+        reply.status(500).send({ message: 'Unable to create garage at this time, please try again later.' });
+        return
+    }
+    reply.send({ 
+        message: 'Successfully created vehicle!',
+        data: {    
+            id: createdVehicle.id,
+            userId: createdVehicle.userId,
+            garageId: createdVehicle.garageId,
+            type: createdVehicle.type,
+            make: createdVehicle.make,
+            model: createdVehicle.model,
+            year: createdVehicle.year,
+            description: createdVehicle.description,
+            history: createdVehicle.history,
+            imageUrl: createdVehicle.imageUrl,
+            modifications: createdVehicle.modifications,
+            createdOn: createdVehicle.createdOn,
+            updatedOn: createdVehicle.updatedOn,
         }
     })
 });

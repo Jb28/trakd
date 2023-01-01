@@ -1,4 +1,4 @@
-export interface Garage {
+export interface Garage {    
     id?: number;
     userId?: number;
     name: string;
@@ -9,7 +9,7 @@ export interface Garage {
 
 export interface Vehicle {
     id?: number;
-    userId: number;
+    userId?: number;
     garageId: number;
     type: string;
     make: string;

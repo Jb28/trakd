@@ -3,10 +3,11 @@ import { User } from "../interfaces/User";
 import { Garage, Vehicle } from "../interfaces/VehicleInterfaces";
 import {
     createNewUserGarageInDB, 
-    createNewUserVehicleInDB
+    createNewUserVehicleInDB,
+    getUserGarageById,
+    getUserVehiclesForGarage
 } from "../repositories/vehicle-repository";
 
-//serviceResult.message = 'Unable to create a new Garage at this time, please try again later';        
 export const createUserGarage = async function(pgPool: Pool, user: User, garage: Garage): Promise<Garage|null>  {    
     const client = await pgPool.connect();
     try {
@@ -18,24 +19,35 @@ export const createUserGarage = async function(pgPool: Pool, user: User, garage:
         await client.release();
     }
     return null;
-}
+};
 
-export const createUserVehicle = async function(pgPool: Pool, user: User, garage: Garage, vehicle: Vehicle): Promise<Vehicle|null> {
+export const getUserGarageWithVehicles = async function(pgPool: Pool, user: User, garageId: number): Promise<Garage|null>  {    
+    const client = await pgPool.connect();
+    try {
+        const garage = await getUserGarageById(client, user, garageId);
+        if (!garage) {
+            return null;
+        }
+        const vehiclesInGarage = await getUserVehiclesForGarage(client, user, garageId);
+        garage.vehicles = vehiclesInGarage;
+        return garage;
+    } catch(error) {
+        console.log(`Error in createUserGarage: ${error}`);
+    } finally {
+        await client.release();
+    }
+    return null;
+};
+
+export const createUserVehicle = async function(pgPool: Pool, user: User, vehicle: Vehicle): Promise<Vehicle|null> {
     const client = await pgPool.connect();
     try {
         //ToDo: add a limit for number of vehicles in a garage (20)
-        return await createNewUserVehicleInDB(client, user, garage, vehicle);        
+        return await createNewUserVehicleInDB(client, user, vehicle);        
     } catch(error) {
         console.log(`Error in createUserGarage: ${error}`);        
     } finally {
         await client.release();
     }
     return null;
-}
-
-//ToDo
-export const getUserGarage = async function(pgPool: Pool, user: User, garage: Garage) : Promise<Garage|null> {
-    //retrieve garage
-    //retrieve all vehicles for that garage
-    return null;
-}
+};
