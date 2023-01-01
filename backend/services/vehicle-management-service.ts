@@ -7,7 +7,7 @@ import {
 } from "../repositories/vehicle-repository";
 
 //serviceResult.message = 'Unable to create a new Garage at this time, please try again later';        
-const createUserGarage = async function(pgPool: Pool, user: User, garage: Garage): Promise<Garage|null>  {    
+export const createUserGarage = async function(pgPool: Pool, user: User, garage: Garage): Promise<Garage|null>  {    
     const client = await pgPool.connect();
     try {
         //ToDo: add a limit for number of garages (2)
@@ -20,7 +20,7 @@ const createUserGarage = async function(pgPool: Pool, user: User, garage: Garage
     return null;
 }
 
-const createUserVehicle = async function(pgPool: Pool, user: User, garage: Garage, vehicle: Vehicle): Promise<Vehicle|null> {
+export const createUserVehicle = async function(pgPool: Pool, user: User, garage: Garage, vehicle: Vehicle): Promise<Vehicle|null> {
     const client = await pgPool.connect();
     try {
         //ToDo: add a limit for number of vehicles in a garage (20)
@@ -34,7 +34,7 @@ const createUserVehicle = async function(pgPool: Pool, user: User, garage: Garag
 }
 
 //ToDo
-const getUserGarage = async function(pgPool: Pool, user: User, garage: Garage) : Promise<Garage|null> {
+export const getUserGarage = async function(pgPool: Pool, user: User, garage: Garage) : Promise<Garage|null> {
     //retrieve garage
     //retrieve all vehicles for that garage
     return null;

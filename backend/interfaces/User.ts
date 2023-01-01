@@ -1,5 +1,5 @@
 export interface User {
-    id?: BigInteger;
+    id?: number;
     email: string;
     password?: string;
     passwordHashed?: string;

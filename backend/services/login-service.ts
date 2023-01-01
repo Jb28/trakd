@@ -8,9 +8,10 @@ import {
     insertNewUserToDB, 
     getUserByEmailFromDB,
     insertUserSession ,
-    getUserSessionBySessionKey,
+    getUserSessionBySessionKeyAndUserId,
     extendExistingUserSession,
-    logoutUserSession
+    logoutUserSession,
+    getUserBySessionKey as getUserBySessionKeyFromDb
 } from '../repositories/login-repository';
 
 export const createUser = async function(pgPool: Pool, user: User, userDeviceInformation: UserDeviceInformation): Promise<string> {    
@@ -86,7 +87,7 @@ const createUserSession = async function(pgPool: Pool, user: User, userDeviceInf
         return sessionKey;
     }
     //search for existing session
-    const currentUserSessionFromKey = await getUserSessionBySessionKey(pgPool, user, currentSessionKey);
+    const currentUserSessionFromKey = await getUserSessionBySessionKeyAndUserId(pgPool, user, currentSessionKey);
     //if it exists, extend it    
     if (currentUserSessionFromKey) {
         await extendExistingUserSession(pgPool, user, currentSessionKey)
@@ -96,6 +97,17 @@ const createUserSession = async function(pgPool: Pool, user: User, userDeviceInf
     await insertUserSession(pgPool, user, sessionKey, userDeviceInformation);
     return sessionKey;
 };
+
+export const getUserSessionByKey = async function(pgPool: Pool, currentSessionKey: string): Promise<User|null> {
+    //search for existing session
+    const currentUserFromKey = await getUserBySessionKeyFromDb(pgPool, currentSessionKey);
+    //if it exists, extend it    
+    if (currentUserFromKey) {
+        await extendExistingUserSession(pgPool, currentUserFromKey, currentSessionKey);
+        return currentUserFromKey;
+    }
+    return null;
+}
 
 export const logoutUser = async function(pgPool: Pool, sessionKey: string): Promise<boolean>  {    
     return await logoutUserSession(pgPool, sessionKey);    

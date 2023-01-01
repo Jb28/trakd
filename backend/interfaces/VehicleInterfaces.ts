@@ -1,6 +1,6 @@
 export interface Garage {
-    id?: BigInteger;
-    userId: BigInteger;
+    id?: number;
+    userId?: number;
     name: string;
     vehicles?: Array<Vehicle>;
     createdOn?: Date; 
@@ -8,9 +8,9 @@ export interface Garage {
 };
 
 export interface Vehicle {
-    id?: BigInteger;
-    userId: BigInteger;
-    garageId: BigInteger;
+    id?: number;
+    userId: number;
+    garageId: number;
     type: string;
     make: string;
     model: string;
@@ -22,17 +22,3 @@ export interface Vehicle {
     createdOn?: Date;
     updatedOn?: Date;
 }
-
-export interface User {
-    id?: BigInteger;
-    email: string;
-    password?: string;
-    passwordHashed?: string;
-    passwordSalt?: string;
-    username?: string;
-    avatarUrl?: string;
-    country?: string, 
-    isActivated?: boolean,
-    createdOn?: Date, 
-    updatedOn?: Date,
-};

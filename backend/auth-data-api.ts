@@ -1,14 +1,19 @@
 const fs = require('fs');
 const path = require('path');
 import { Pool } from 'pg';
+import { User } from './interfaces/User';
+import cookie from '@fastify/cookie';
+import type { FastifyCookieOptions } from '@fastify/cookie'
 const fastify = require('fastify')({
     logger: false,
 });
 import { 
     createUser,
     loginUser,
-    logoutUser
+    logoutUser,
+    getUserSessionByKey
 } from './services/login-service';
+import { createUserGarage } from './services/vehicle-management-service';
 
 /* Setup */
 const pgPool = new Pool({
@@ -23,6 +28,15 @@ const envs = {
     signedCookies: process.env.signedCookies || false,
 };
 
+fastify.register(cookie, {
+    secret: fs.readFileSync(path.join(__dirname, 'secret-key')),
+    hook: 'onRequest', // set to false to disable cookie autoparsing or set autoparsing on any of the following hooks: 'onRequest', 'preParsing', 'preHandler', 'preValidation'. default: 'onRequest'
+    parseOptions: { 
+        signed: envs.signedCookies,
+        maxAge: 2592000 //30 days in seconds - 60*60*24*30
+    },
+} as FastifyCookieOptions);
+
 // fastify.register(require('fastify-cookie'));
 // fastify.register(require('fastify-session'), {
 //     secret: fs.readFileSync(path.join(__dirname, 'secret-key')),
@@ -32,11 +46,19 @@ const envs = {
 //     },
 // });
 
-fastify.register(require('@fastify/cookie'), {
-    secret: fs.readFileSync(path.join(__dirname, 'secret-key')),
-    hook: 'onRequest', // set to false to disable cookie autoparsing or set autoparsing on any of the following hooks: 'onRequest', 'preParsing', 'preHandler', 'preValidation'. default: 'onRequest'
-    parseOptions: { signed: envs.signedCookies }, // options for parsing cookies
-});
+const verifyUserSession = async function(request: any, reply: any): Promise<User|null>{
+    const userSessionKey = request.cookies[envs.authKeyValue];
+    if (!userSessionKey) {
+        reply.status(401).send({ message: 'You are not currently logged in.' });
+        return null;
+    }
+    const userFromSessionKey = await getUserSessionByKey(pgPool, userSessionKey);
+    if (!userFromSessionKey) {
+        reply.status(401).send({ message: 'You are not currently logged in.' });
+        return null;
+    }
+    return userFromSessionKey;
+}
 
 fastify.post('/user/create', (request: any, reply: any) => {
     //ToDo param validation
@@ -45,7 +67,7 @@ fastify.post('/user/create', (request: any, reply: any) => {
     };
     createUser(pgPool, { email: request.body.email, password: request.body.password }, userDeviceInformation)
         .then(loginSessionKey => {
-            reply.setCookie(envs.authKeyValue, loginSessionKey);
+            reply.setCookie(envs.authKeyValue, loginSessionKey, { path: '/' });
             reply.send({ message: 'User created successfully' });    
         })
         .catch(err => {
@@ -60,7 +82,7 @@ fastify.post('/user/login/web', (request: any, reply: any) => {
     };
     loginUser(pgPool, request.body.email, request.body.password, userDeviceInformation, request.cookies[envs.authKeyValue])
         .then(extendedLoginSessionKey => {                        
-            reply.setCookie(envs.authKeyValue, extendedLoginSessionKey); 
+            reply.setCookie(envs.authKeyValue, extendedLoginSessionKey, { path: '/' }); 
             reply.send({ message: 'Logged in successfully' });
         })
         .catch(error => {
@@ -68,20 +90,19 @@ fastify.post('/user/login/web', (request: any, reply: any) => {
         });
 });
 
-fastify.post('/user/logout', (request: any, reply: any) => {
-    const userSessionKey = request.cookies[envs.authKeyValue];
-    if (!userSessionKey) {
-        reply.status(401).send({ message: 'You are not currently logged in.' });
+fastify.post('/user/logout', async (request: any, reply: any) => {
+    const user = await verifyUserSession(request, reply);
+    if (!user){
         return;
     }
-    logoutUser(pgPool, userSessionKey)
-        .then(logoutSuccess => {
-            if (logoutSuccess === true) {
-                reply.send({ message: 'Logged out successfully.' });
-                return;
-            }
-            reply.status(401).send({ message: 'Unable to logout at this time, please try again later.' });
-        });
+    const userSessionKey = request.cookies[envs.authKeyValue];
+    const logoutSuccess = await logoutUser(pgPool, userSessionKey);
+    if (logoutSuccess === true) {
+        reply.clearCookie(envs.authKeyValue, userSessionKey, { path: '/' });
+        reply.send({ message: 'Logged out successfully.' });
+        return;
+    }
+    reply.status(401).send({ message: 'Unable to logout at this time, please try again later.' });
 });
 
 //ToDo
@@ -89,9 +110,31 @@ fastify.get('/user/profile', (request: any, reply: any) => {
     reply.status(401).send({ message: 'Not implemented' });
 });
 
-//ToDo
-fastify.get('/user/garage', (request: any, reply: any) => {
-    reply.status(401).send({ message: 'Not implemented' });
+fastify.post('/user/garage/create', async (request: any, reply: any) => {
+    //ToDo param validation
+    const garageToCreate = {
+        name: request.body.name
+    };
+    const user = await verifyUserSession(request, reply);
+    if (!user){
+        return;
+    }
+    const createdGarage = await createUserGarage(pgPool, user!, garageToCreate);
+    if (!createdGarage) {;
+        reply.status(500).send({ message: 'Unable to create garage at this time, please try again later.' });
+        return
+    }
+    reply.send({ 
+        message: '',
+        data: {
+            id: createdGarage.id,
+            userid: createdGarage.userId,
+            name: createdGarage.name,
+            vehicles: [],
+            createdOn: createdGarage.createdOn,
+            updatedOn: createdGarage.updatedOn
+        }
+    })
 });
 
 fastify.listen(envs.port, (err: any, address: any) => {

@@ -5,13 +5,14 @@ import { Garage, Vehicle } from "../interfaces/VehicleInterfaces";
 export const createNewUserGarageInDB = async function(pgPoolClient: PoolClient, user: User, garage: Garage): Promise<Garage> {
     const result = await pgPoolClient.query(
         `INSERT INTO user_garage (user_id, name)
-         VALUES ($1, $2)`,
+         VALUES ($1, $2)
+         RETURNING id, user_id, name, created_on, updated_on`,
          [user.id, garage.name]
     );
     const resultData = result.rows[0];
     return {
-        id: resultData.id,
-        userId: resultData.user_id,
+        id: parseInt(resultData.id),
+        userId: parseInt(resultData.user_id),
         name: resultData.name,
         createdOn: resultData.created_on,
         updatedOn: resultData.updated_on,

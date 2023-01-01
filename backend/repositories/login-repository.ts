@@ -64,7 +64,7 @@ export const insertUserSession = async function(pgPool: Pool, user: User, sessio
     }
 };
 
-export const getUserSessionBySessionKey = async function(pgPool: Pool, user: User, sessionKey?: string): Promise<UserSessionKey | void> {
+export const getUserSessionBySessionKeyAndUserId = async function(pgPool: Pool, user: User, sessionKey?: string): Promise<UserSessionKey | void> {
     const client = await pgPool.connect();
     try {
         const result = await client.query(
@@ -82,6 +82,38 @@ export const getUserSessionBySessionKey = async function(pgPool: Pool, user: Use
                 ip: resultData.ip,
                 country: resultData.country,
                 device: resultData.device
+            };
+        }
+        return;
+    } catch (err) {
+        console.log(`Postgres Error in getUserSessionBySessionKey: ${err}`);
+        throw err;
+    } finally {
+        await client.release();
+    }
+};
+
+export const getUserBySessionKey = async function(pgPool: Pool, sessionKey?: string): Promise<User | void> {
+    const client = await pgPool.connect();
+    try {
+        const result = await client.query(
+            `SELECT um.id, um.email, um.username, um.avatar_url, um.country, um.is_activated, um.created_on, um.updated_on
+             FROM user_session_keys usk
+             INNER JOIN user_main um on um.id = usk.user_id
+             WHERE key = $1`,
+            [sessionKey]
+        );
+        if (result.rows.length > 0){
+            const resultData = result.rows[0];
+            return {
+                id: resultData.id,
+                email: resultData.email,
+                username: resultData.username,
+                avatarUrl: resultData.avatar_url,
+                country: resultData.country,
+                isActivated: resultData.is_activated,
+                createdOn: resultData.created_on,
+                updatedOn: resultData.updated_on
             };
         }
         return;
