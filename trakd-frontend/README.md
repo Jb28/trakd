@@ -5,7 +5,7 @@ From issues when using the NUXT template:
 - Tailwind CSS extra config: https://tailwindcss.com/docs/guides/nuxtjs
 - Thread on issue: https://github.com/nuxt/nuxt.js/issues/10840
 - SSL issue: https://stackoverflow.com/questions/69692842/error-message-error0308010cdigital-envelope-routinesunsupported
-
+- Navigation: https://nuxtjs.org/docs/get-started/routing
 ## Build Setup
 
 ```bash

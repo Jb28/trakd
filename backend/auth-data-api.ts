@@ -19,6 +19,12 @@ import {
     getUserGarageWithVehicles
 } from './services/vehicle-management-service';
 
+const envs = {
+    authKeyValue: process.env.authKeyName || 'auth_key',
+    port: process.env.port || 4000,
+    signedCookies: process.env.signedCookies || false,
+};
+
 /* Setup */
 const pgPool = new Pool({
     user: 'postgres',
@@ -26,11 +32,6 @@ const pgPool = new Pool({
     database: 'local_test',
     port: 5432
 });
-const envs = {
-    authKeyValue: process.env.authKeyName || 'auth_key',
-    port: process.env.port || 3000,
-    signedCookies: process.env.signedCookies || false,
-};
 
 fastify.register(cookie, {
     secret: fs.readFileSync(path.join(__dirname, 'secret-key')),
