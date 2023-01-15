@@ -15,8 +15,8 @@
             </div>
          </span>
          <ul class="md:flex md:items-center md:px-0 px-10 md:pb-0 pb-10 md:static absolute bg-gray-900 
-            md:w-auto w-full top-14 duration-700 ease-in"
-            :class="{ShowMenu}">
+            md:w-auto w-full top-14 duration-200 ease-in"
+            :class="ShowMenu">
             <li v-for="link in Links" :key= "link.name" class="md:mx-4 md:my-0 my-6"> 
                 <div class="hover:text-green-500">
                     <NuxtLink :to="link.link">{{ link.name }}</NuxtLink>
@@ -29,33 +29,29 @@
 
 <script>
 import Button from '../components/Button.vue'
-import { ref } from '@vue/reactivity'
 export default {
     components: {
         Button
     },
-    data() {
-        open = false;
-    },
-    setup(){    
-        const Links = [
+    data: () => ({
+        open: false,
+        Links: [
             {name: 'Home', link: '/'},
             {name: 'Garage', link: '/garage'},
-        ];
-        function MenuOpen() {
-            console.log(open);
-            open = !open
-        }
-        return { Links, MenuOpen };
-    },
+        ]
+    }),
     computed:{
         ShowMenu() {
-            // if (this.open) {
-            //     return 'left-0';
-            // }
+            if (this.open) {
+                return 'left-0';
+            }
             return 'left-[-100%]';
+        },
+    },
+    methods: {
+        MenuOpen() {
+            this.open = !this.open;
         }
     }
-    //<i :class="[open ? 'bi bi-x' : 'bi bi-filter-left']"></i>
 }
 </script>
