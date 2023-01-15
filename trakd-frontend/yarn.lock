@@ -22,9 +22,9 @@
   resolved "https://registry.npmjs.org/@babel/compat-data/-/compat-data-7.20.10.tgz"
   integrity sha512-sEnuDPpOJR/fcafHMjpcpGN5M2jbUGUHwmuWKM/YdPzeEDJg8bgmbcWQFUfE32MQjti1koACvoPVsDe8Uq+idg==
 
-"@babel/core@^7.11.6", "@babel/core@^7.12.3", "@babel/core@^7.14.0", "@babel/core@^7.19.0":
+"@babel/core@^7.11.6", "@babel/core@^7.12.3", "@babel/core@^7.14.0":
   version "7.20.7"
-  resolved "https://registry.yarnpkg.com/@babel/core/-/core-7.20.7.tgz#37072f951bd4d28315445f66e0ec9f6ae0c8c35f"
+  resolved "https://registry.npmjs.org/@babel/core/-/core-7.20.7.tgz"
   integrity sha512-t1ZjCluspe5DW24bn2Rr1CDb2v9rn/hROtg9a2tmd0+QYf4bsloYfLQzjG4qHPNMhWtKdGC33R5AxGR2Af2cBw==
   dependencies:
     "@ampproject/remapping" "^2.1.0"
@@ -41,6 +41,27 @@
     debug "^4.1.0"
     gensync "^1.0.0-beta.2"
     json5 "^2.2.1"
+    semver "^6.3.0"
+
+"@babel/core@^7.19.0":
+  version "7.20.12"
+  resolved "https://registry.yarnpkg.com/@babel/core/-/core-7.20.12.tgz#7930db57443c6714ad216953d1356dac0eb8496d"
+  integrity sha512-XsMfHovsUYHFMdrIHkZphTN/2Hzzi78R08NuHfDBehym2VsPDL6Zn/JAD/JQdnRvbSsbQc4mVaU1m6JgtTEElg==
+  dependencies:
+    "@ampproject/remapping" "^2.1.0"
+    "@babel/code-frame" "^7.18.6"
+    "@babel/generator" "^7.20.7"
+    "@babel/helper-compilation-targets" "^7.20.7"
+    "@babel/helper-module-transforms" "^7.20.11"
+    "@babel/helpers" "^7.20.7"
+    "@babel/parser" "^7.20.7"
+    "@babel/template" "^7.20.7"
+    "@babel/traverse" "^7.20.12"
+    "@babel/types" "^7.20.7"
+    convert-source-map "^1.7.0"
+    debug "^4.1.0"
+    gensync "^1.0.0-beta.2"
+    json5 "^2.2.2"
     semver "^6.3.0"
 
 "@babel/eslint-parser@^7.19.1":
@@ -937,9 +958,9 @@
     regenerator-runtime "^0.13.11"
 
 "@babel/standalone@^7.19.0":
-  version "7.20.11"
-  resolved "https://registry.yarnpkg.com/@babel/standalone/-/standalone-7.20.11.tgz#8baf940746546e312f39539bdeefa3240108f3ec"
-  integrity sha512-WUPlwwXFk3iViGE7QFVVp423eVtT+eoXu1940Xu4QJgqgHBF6WWtlwO1Ip5rIWQnp7OHrGdwrwKLtLhUVfOZbA==
+  version "7.20.12"
+  resolved "https://registry.yarnpkg.com/@babel/standalone/-/standalone-7.20.12.tgz#ae882b8642b4efb1ddd80c8a64a929e028095562"
+  integrity sha512-hK/X+m1il3w1tYS4H8LDaGCEdiT47SVqEXY8RiEAgou26BystipSU8ZL6EvBR6t5l7lTv0ilBiChXWblKJ5iUA==
 
 "@babel/template@^7.18.10", "@babel/template@^7.20.7", "@babel/template@^7.3.3":
   version "7.20.7"
@@ -954,6 +975,22 @@
   version "7.20.10"
   resolved "https://registry.npmjs.org/@babel/traverse/-/traverse-7.20.10.tgz"
   integrity sha512-oSf1juCgymrSez8NI4A2sr4+uB/mFd9MXplYGPEBnfAuWmmyeVcHa6xLPiaRBcXkcb/28bgxmQLTVwFKE1yfsg==
+  dependencies:
+    "@babel/code-frame" "^7.18.6"
+    "@babel/generator" "^7.20.7"
+    "@babel/helper-environment-visitor" "^7.18.9"
+    "@babel/helper-function-name" "^7.19.0"
+    "@babel/helper-hoist-variables" "^7.18.6"
+    "@babel/helper-split-export-declaration" "^7.18.6"
+    "@babel/parser" "^7.20.7"
+    "@babel/types" "^7.20.7"
+    debug "^4.1.0"
+    globals "^11.1.0"
+
+"@babel/traverse@^7.20.12":
+  version "7.20.12"
+  resolved "https://registry.yarnpkg.com/@babel/traverse/-/traverse-7.20.12.tgz#7f0f787b3a67ca4475adef1f56cb94f6abd4a4b5"
+  integrity sha512-MsIbFN0u+raeja38qboyF8TIT7K0BFzz/Yd/77ta4MsUsmP2RAnidIlwq7d5HFQrH/OZJecGV6B71C4zAgpoSQ==
   dependencies:
     "@babel/code-frame" "^7.18.6"
     "@babel/generator" "^7.20.7"
@@ -1339,6 +1376,20 @@
   dependencies:
     mkdirp "^1.0.4"
     rimraf "^3.0.2"
+
+"@nuxt-hero-icons/outline@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@nuxt-hero-icons/outline/-/outline-1.0.1.tgz#71e040cf05addecdb50c2f90c1d3bfae46944d29"
+  integrity sha512-2kMugIcVzU96BJZTmCIJTyruHQzZFS0KE66Wkfa+vWlQTZ7CESL4npVFfek2ENQjQvT075x2RyIhcIpWOQIupw==
+  dependencies:
+    heroicons "git+https://github.com/tailwindlabs/heroicons.git#master"
+
+"@nuxt-hero-icons/solid@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@nuxt-hero-icons/solid/-/solid-1.0.1.tgz#4c032f58567426dd6fc2286ee6d3f9326a1a415c"
+  integrity sha512-3oM0F2qSzBioP0WceYXoIOIYIpWFPSa7duPHDhdN/tNsc9fTu5HgespSdpd045/DNHlPW2t7n2eDhBMI4fMszw==
+  dependencies:
+    heroicons "git+https://github.com/tailwindlabs/heroicons.git#master"
 
 "@nuxt/babel-preset-app@2.15.8":
   version "2.15.8"
@@ -2148,6 +2199,18 @@
     vue-template-es2015-compiler "^1.9.0"
   optionalDependencies:
     prettier "^1.18.2 || ^2.0.0"
+
+"@vue/reactivity@^3.2.45":
+  version "3.2.45"
+  resolved "https://registry.yarnpkg.com/@vue/reactivity/-/reactivity-3.2.45.tgz#412a45b574de601be5a4a5d9a8cbd4dee4662ff0"
+  integrity sha512-PRvhCcQcyEVohW0P8iQ7HDcIOXRjZfAsOds3N99X/Dzewy8TVhTCT4uXpAHfoKjVTJRA0O0K+6QNkDIZAxNi3A==
+  dependencies:
+    "@vue/shared" "3.2.45"
+
+"@vue/shared@3.2.45":
+  version "3.2.45"
+  resolved "https://registry.yarnpkg.com/@vue/shared/-/shared-3.2.45.tgz#a3fffa7489eafff38d984e23d0236e230c818bc2"
+  integrity sha512-Ewzq5Yhimg7pSztDV+RH1UDKBzmtqieXQlpTVm2AwraoRL/Rks96mvd8Vgi7Lj+h+TH8dv7mXD3FRZR3TUvbSg==
 
 "@vue/test-utils@^1.3.0":
   version "1.3.3"
@@ -5644,6 +5707,10 @@ he@1.2.0, he@^1.2.0:
   resolved "https://registry.npmjs.org/he/-/he-1.2.0.tgz"
   integrity sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==
 
+"heroicons@git+https://github.com/tailwindlabs/heroicons.git#master":
+  version "2.0.13"
+  resolved "git+https://github.com/tailwindlabs/heroicons.git#1765c5608205c0766599441834e4a337ffa88335"
+
 hex-color-regex@^1.1.0:
   version "1.1.0"
   resolved "https://registry.npmjs.org/hex-color-regex/-/hex-color-regex-1.1.0.tgz"
@@ -6754,7 +6821,12 @@ jest@^29.1.2:
     import-local "^3.0.2"
     jest-cli "^29.3.1"
 
-jiti@^1.15.0, jiti@^1.16.0, jiti@^1.9.2:
+jiti@^1.15.0:
+  version "1.16.2"
+  resolved "https://registry.yarnpkg.com/jiti/-/jiti-1.16.2.tgz#75f7a0a8fde4a0e57e576f7d329491d588db89cf"
+  integrity sha512-OKBOVWmU3FxDt/UH4zSwiKPuc1nihFZiOD722FuJlngvLz2glX1v2/TJIgoA4+mrpnXxHV6dSAoCvPcYQtoG5A==
+
+jiti@^1.16.0, jiti@^1.9.2:
   version "1.16.0"
   resolved "https://registry.npmjs.org/jiti/-/jiti-1.16.0.tgz"
   integrity sha512-L3BJStEf5NAqNuzrpfbN71dp43mYIcBUlCRea/vdyv5dW/AYa1d4bpelko4SHdY3I6eN9Wzyasxirj1/vv5kmg==
@@ -6873,9 +6945,9 @@ json5@^1.0.1:
   dependencies:
     minimist "^1.2.0"
 
-json5@^2.1.2, json5@^2.2.1:
+json5@^2.1.2, json5@^2.2.1, json5@^2.2.2:
   version "2.2.3"
-  resolved "https://registry.npmjs.org/json5/-/json5-2.2.3.tgz"
+  resolved "https://registry.yarnpkg.com/json5/-/json5-2.2.3.tgz#78cd6f1a19bdc12b73db5ad0c61efd66c1e29283"
   integrity sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==
 
 jsonc-parser@^3.2.0:

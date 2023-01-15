@@ -6,6 +6,8 @@ From issues when using the NUXT template:
 - Thread on issue: https://github.com/nuxt/nuxt.js/issues/10840
 - SSL issue: https://stackoverflow.com/questions/69692842/error-message-error0308010cdigital-envelope-routinesunsupported
 - Navigation: https://nuxtjs.org/docs/get-started/routing
+- Hero icons: https://vue-hero-icons.netlify.app/ - NOTE this sucks and needs to be updated, but wanted something that could work
+
 ## Build Setup
 
 ```bash

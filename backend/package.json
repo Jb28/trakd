@@ -26,8 +26,7 @@
     "url": "https://github.com/Jb28/trakd/issues"
   },
   "homepage": "https://github.com/Jb28/trakd#readme",
-  "devDependencies": {
-    "typescript": "^2.7.2",
+  "devDependencies": {    
     "@types/node": "^18.11.17",
     "@types/pg": "^8.6.5"
   }
