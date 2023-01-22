@@ -4,7 +4,6 @@ import { Pool } from 'pg';
 import { User } from './interfaces/User';
 import cookie from '@fastify/cookie';
 import type { FastifyCookieOptions } from '@fastify/cookie'
-import cors from '@fastify/cors';
 const fastify = require('fastify')({
     logger: false,
 });
@@ -43,25 +42,26 @@ fastify.register(cookie, {
     },
 } as FastifyCookieOptions);
 
-fastify.register(cors, {
-    origin: (origin: any, cb: any) => {
-        if (origin === undefined) {
-            // For Postman
-            cb(null, true);
-            return;
-        }
-        console.log('In: ' + origin);
-        const hostname = new URL(origin).hostname
-        if(hostname === "localhost"){
-          //  Request from localhost will pass
-          console.log('inside localhost');
-          cb(null, true);
-          return;
-        }
-        // Generate an error on other origins, disabling access
-        cb(new Error("Not allowed"), false);
-      }
-})
+fastify.addHook('preHandler', (req: any, res: any, done: any) => {
+    console.log('pre handler hit')
+    // example logic for conditionally adding headers
+    // const allowedPaths = ["/some", "/list", "/of", "/paths"];
+    // if (allowedPaths.includes(req.routerPath)) {
+    res.header("Access-Control-Allow-Origin", "http://localhost:3000"); //ToDo: this needs to come from envs
+    res.header("Access-Control-Allow-Methods", "POST");
+    res.header("Access-Control-Allow-Headers",  "Accept, Accept-Language, Content-Language, Content-Type");
+    res.header("Access-Control-Allow-Credentials",  true);
+    // }
+  
+    console.log(req.method);
+    const isPreflight = /options/i.test(req.method);
+    if (isPreflight) {
+        console.log('preflight')
+      return res.send();
+    }
+        
+    done();
+  })
 
 // fastify.register(require('fastify-cookie'));
 // fastify.register(require('fastify-session'), {
@@ -108,7 +108,7 @@ fastify.post('/user/login/web', (request: any, reply: any) => {
     };
     loginUser(pgPool, request.body.email, request.body.password, userDeviceInformation, request.cookies[envs.authKeyValue])
         .then(extendedLoginSessionKey => {
-            reply.setCookie(envs.authKeyValue, extendedLoginSessionKey, { path: '/' }); 
+            reply.setCookie(envs.authKeyValue, extendedLoginSessionKey, { path: '/' });
             reply.send({ message: 'Logged in successfully' });
             console.log('Logged in user successfully');
         })

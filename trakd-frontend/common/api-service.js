@@ -3,7 +3,7 @@ import axios from "axios";
 const authDataApiAxios = axios.create({
     baseURL: 'http://localhost:4000/',
     timeout: 60000,
-    withCredentials: false //true?
+    withCredentials: true
 });
 
 export const authDataApiService = {
