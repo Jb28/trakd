@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@fastify/cors": "^8.2.0",
     "@fastify/secure-session": "^5.3.0",
     "fastify": "^4.10.2",
     "fastify-cookie": "^5.7.0",
@@ -26,7 +27,7 @@
     "url": "https://github.com/Jb28/trakd/issues"
   },
   "homepage": "https://github.com/Jb28/trakd#readme",
-  "devDependencies": {    
+  "devDependencies": {
     "@types/node": "^18.11.17",
     "@types/pg": "^8.6.5"
   }

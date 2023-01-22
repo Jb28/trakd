@@ -37,6 +37,10 @@ export default {
     '@nuxt-hero-icons/solid/nuxt',
   ],
 
+  middleware: [
+    'auth'
+  ],
+
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
   ],

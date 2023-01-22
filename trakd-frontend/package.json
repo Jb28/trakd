@@ -16,7 +16,10 @@
   "dependencies": {
     "@nuxt-hero-icons/outline": "^1.0.1",
     "@nuxt-hero-icons/solid": "^1.0.1",
+    "axios": "0.27.2",
     "core-js": "^3.25.3",
+    "i": "^0.3.7",
+    "npm": "^9.3.1",
     "nuxt": "^2.15.8",
     "vue": "^2.7.10",
     "vue-server-renderer": "^2.7.10",

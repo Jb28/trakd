@@ -4,6 +4,7 @@ import { Pool } from 'pg';
 import { User } from './interfaces/User';
 import cookie from '@fastify/cookie';
 import type { FastifyCookieOptions } from '@fastify/cookie'
+import cors from '@fastify/cors';
 const fastify = require('fastify')({
     logger: false,
 });
@@ -41,6 +42,26 @@ fastify.register(cookie, {
         maxAge: 2592000 //30 days in seconds - 60*60*24*30
     },
 } as FastifyCookieOptions);
+
+fastify.register(cors, {
+    origin: (origin: any, cb: any) => {
+        if (origin === undefined) {
+            // For Postman
+            cb(null, true);
+            return;
+        }
+        console.log('In: ' + origin);
+        const hostname = new URL(origin).hostname
+        if(hostname === "localhost"){
+          //  Request from localhost will pass
+          console.log('inside localhost');
+          cb(null, true);
+          return;
+        }
+        // Generate an error on other origins, disabling access
+        cb(new Error("Not allowed"), false);
+      }
+})
 
 // fastify.register(require('fastify-cookie'));
 // fastify.register(require('fastify-session'), {
@@ -86,12 +107,14 @@ fastify.post('/user/login/web', (request: any, reply: any) => {
         ip: request.ip
     };
     loginUser(pgPool, request.body.email, request.body.password, userDeviceInformation, request.cookies[envs.authKeyValue])
-        .then(extendedLoginSessionKey => {                        
+        .then(extendedLoginSessionKey => {
             reply.setCookie(envs.authKeyValue, extendedLoginSessionKey, { path: '/' }); 
             reply.send({ message: 'Logged in successfully' });
+            console.log('Logged in user successfully');
         })
         .catch(error => {
             reply.status(401).send({message: 'Login error encountered, please retry later.'});
+            console.log('Failed to log in user');
         });
 });
 
