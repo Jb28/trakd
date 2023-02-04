@@ -120,7 +120,7 @@ fastify.post('/user/login/web', (request: any, reply: any) => {
 
 fastify.post('/user/logout', async (request: any, reply: any) => {
     const user = await verifyUserSession(request, reply);
-    if (!user){
+    if (!user) {
         return;
     }
     const userSessionKey = request.cookies[envs.authKeyValue];
@@ -133,9 +133,16 @@ fastify.post('/user/logout', async (request: any, reply: any) => {
     reply.status(401).send({ message: 'Unable to logout at this time, please try again later.' });
 });
 
-//ToDo
-fastify.get('/user/profile', (request: any, reply: any) => {
-    reply.status(401).send({ message: 'Not implemented' });
+fastify.get('/user/profile', async (request: any, reply: any) => {
+    // reply.status(401).send({ message: 'Not implemented' });
+    const user = await verifyUserSession(request, reply);
+    if (!user) {
+        return;
+    }
+    reply.send({ 
+        message: 'User retrieved',
+        data: user        
+    });
 });
 
 fastify.post('/user/garage/create', async (request: any, reply: any) => {
@@ -144,7 +151,7 @@ fastify.post('/user/garage/create', async (request: any, reply: any) => {
         name: request.body.name
     };
     const user = await verifyUserSession(request, reply);
-    if (!user){
+    if (!user) {
         return;
     }
     const createdGarage = await createUserGarage(pgPool, user!, garageToCreate);

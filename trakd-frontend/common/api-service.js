@@ -9,5 +9,11 @@ const authDataApiAxios = axios.create({
 export const authDataApiService = {
     loginUser(loginData) {
         return authDataApiAxios.post('/user/login/web', loginData);
+    },
+    logoutUser() {
+        return authDataApiAxios.post('/user/logout');
+    },
+    getUserProfile() {
+        return authDataApiAxios.get('/user/profile');
     }
 }

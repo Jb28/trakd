@@ -22,10 +22,18 @@
                         <NuxtLink :to="link.link">{{ link.name }}</NuxtLink>
                     </div>
                 </li>
-                <button @click="onToggle"
-                    class="bg-orange-400 hover:bg-orange-500 duration-300 fron-sm text-white rounded py-1.5 px-4">
-                    Login
-                </button>
+                <div v-if="user !== null">
+                    <button @click="logout"
+                        class="bg-orange-400 hover:bg-orange-500 duration-300 fron-sm text-white rounded py-1.5 px-4">
+                        Logout
+                    </button>
+                </div>
+                <div v-else>
+                    <button @click="onToggle"
+                        class="bg-orange-400 hover:bg-orange-500 duration-300 fron-sm text-white rounded py-1.5 px-4">
+                        Login
+                    </button>
+                </div>
             </ul>
 
         </div>
@@ -82,6 +90,9 @@ export default {
     components: {
         Button
     },
+    created: function(){
+        this.getUserProfile()
+    }, 
     data: () => ({
         showMenu: false,
         showLoginModal: false,
@@ -90,6 +101,7 @@ export default {
             { name: 'Garage', link: '/garage' },
         ],
         isOpen: false,
+        user: null,
         email: '',
         password: '',
     }),
@@ -108,6 +120,18 @@ export default {
         MenuOpen() {
             this.showMenu = !this.showMenu;
         },
+        getUserProfile() {
+            console.log('getUserProfile')
+            authDataApiService.getUserProfile()
+                .then((response) => {
+                    this.user = response.data
+                    console.log('Got user: ' + this.user);
+                })
+                .catch(err => {
+                    console.log(err);
+                    this.user = null;
+                });
+        },
         LoginModal() {
             this.showLoginModal = !this.showLoginModal;
         },
@@ -120,12 +144,26 @@ export default {
             authDataApiService.loginUser({ email: this.$data.email, password: this.$data.password })
                 .then((response) => {
                     console.log(response);
+                    this.onToggle();
+                    return this.getUserProfile()
                 })
                 .catch(err => {
                     //todo: toast notification
                     console.log('Big problem logging in ' + err);
                 });
         },
+        logout(e) {
+            e.preventDefault();
+            console.log('logging out');
+            authDataApiService.logoutUser()
+                .then((response) => {
+                    console.log(response);
+                    this.user = null;
+                })
+                .catch(err => {
+
+                });
+        }
     }
 }
 </script>
