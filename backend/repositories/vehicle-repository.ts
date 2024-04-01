@@ -19,6 +19,23 @@ export const createNewUserGarageInDB = async function(pgPoolClient: PoolClient, 
     }
 };
 
+export const getUserGarageIds = async function(pgPoolClient: PoolClient, user: User): Promise<number[]|null> {
+    const result = await pgPoolClient.query(
+        `SELECT id 
+         FROM user_garage
+         WHERE user_id = $1`,
+         [user.id]
+    );
+    if (result.rows.length <= 0){
+        return null;
+    }
+    const userGarageIds: number[] = [];
+    result.rows.forEach(row =>{
+        userGarageIds.push(row.id);
+    });
+    return userGarageIds;
+};
+
 export const getUserGarageById = async function(pgPoolClient: PoolClient, user: User, garageId: number): Promise<Garage|null> {
     const result = await pgPoolClient.query(
         `SELECT id, user_id, name, created_on, updated_on 

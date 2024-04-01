@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 import { Pool } from 'pg';
 import { User } from './interfaces/User';
+import { Garage } from "./interfaces/VehicleInterfaces";
 import cookie from '@fastify/cookie';
 import type { FastifyCookieOptions } from '@fastify/cookie'
 const fastify = require('fastify')({
@@ -16,6 +17,7 @@ import {
 import { 
     createUserGarage,
     createUserVehicle,
+    getGarageIdsForUser,
     getUserGarageWithVehicles
 } from './services/vehicle-management-service';
 
@@ -174,25 +176,47 @@ fastify.post('/user/garage/create', async (request: any, reply: any) => {
 
 fastify.get('/user/garage', async (request: any, reply: any) => {
     //ToDo param validation
-    const garageId = parseInt(request.query.garageId);
     const user = await verifyUserSession(request, reply);
     if (!user){
         return;
     }
-    const retrievedGarage = await getUserGarageWithVehicles(pgPool, user!, garageId);
-    if (!retrievedGarage) {;
-        reply.status(500).send({ message: 'Unable to retrieve garage at this time, please try again later.' });
-        return
+    let garageIds: number[] = [];
+    if (!parseInt(request.query.garageId)) {
+        const retrievedGarageIds = await getGarageIdsForUser(pgPool, user);
+        if (!retrievedGarageIds) {
+            reply.status(500).send({ message: 'Unable to retrieve garage at this time, please try again later.' });
+            return;
+        }
+        garageIds = retrievedGarageIds;
+    } else {
+        garageIds.push(parseInt(request.query.garageId));
     }
+    const garagesToReturn: Garage[] = [];
+    for (const garageId of garageIds) {
+        const retrievedGarage = await getUserGarageWithVehicles(pgPool, user!, garageId);
+        if (!retrievedGarage) {
+            reply.status(500).send({ message: 'Unable to retrieve garage at this time, please try again later.' });
+        }
+        if (retrievedGarage){
+            garagesToReturn.push(retrievedGarage);
+        }
+    }
+    //todo data to return
     reply.send({ 
         message: 'Successfully retrieved Garage!',
         data: {
-            id: retrievedGarage.id,
-            userid: retrievedGarage.userId,
-            name: retrievedGarage.name,
-            vehicles: retrievedGarage.vehicles,
-            createdOn: retrievedGarage.createdOn,
-            updatedOn: retrievedGarage.updatedOn
+            garages: [
+                garagesToReturn.map(garage => {
+                    return {
+                        id: garage.id,
+                        userid: garage.userId,
+                        name: garage.name,
+                        vehicles: garage.vehicles,
+                        createdOn: garage.createdOn,
+                        updatedOn: garage.updatedOn
+                    }
+                })
+            ]
         }
     })
 });

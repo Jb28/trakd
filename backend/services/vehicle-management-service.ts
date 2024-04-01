@@ -5,7 +5,8 @@ import {
     createNewUserGarageInDB, 
     createNewUserVehicleInDB,
     getUserGarageById,
-    getUserVehiclesForGarage
+    getUserVehiclesForGarage,
+    getUserGarageIds
 } from "../repositories/vehicle-repository";
 
 export const createUserGarage = async function(pgPool: Pool, user: User, garage: Garage): Promise<Garage|null>  {    
@@ -15,6 +16,19 @@ export const createUserGarage = async function(pgPool: Pool, user: User, garage:
         return await createNewUserGarageInDB(client, user, garage);        
     } catch(error) {
         console.log(`Error in createUserGarage: ${error}`);        
+    } finally {
+        await client.release();
+    }
+    return null;
+};
+
+export const getGarageIdsForUser = async function(pgPool: Pool, user: User): Promise<number[]|null> {
+    const client = await pgPool.connect();
+    try {
+        const garageIds = await getUserGarageIds(client, user);
+        return !garageIds ? null : garageIds;
+    } catch(error) {
+        console.log(`Error in getGarageIdsForUser: ${error}`);
     } finally {
         await client.release();
     }
